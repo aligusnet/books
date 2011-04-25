@@ -2,6 +2,7 @@ This is catalogizer for epub library. This is detailed description in russian be
 
 Requitments:
 * lxml: easy_install lxml
+* Snowball stemming for Python: http://snowball.tartarus.org/download.php. 
 
 Brief description:
 
@@ -23,8 +24,10 @@ Parser epub files.
 
 Использование и описание:
 
-Используется бибилиотека lxml. Если еще не установлена, выполните команду: 
+Зависимости:
+* Библиотека lxml. Если еще не установлена, выполните команду: 
 $ easy_install lxml
+* Snowball stemming for Python: http://snowball.tartarus.org/download.php.
 
 * catalogizer.py source_dir target_dir
 Обходит все книги epub в каталоге и подкаталогах epub и вытаскивает из метаданных название книги и имя автора. Размещает книги в target_dir/первая буква фамилии автора/полное имя автора/название книги.epub

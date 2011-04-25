@@ -2,6 +2,7 @@ import os
 import sys
 import epub
 import index
+import Stemmer
 
 def intersect(lhs, rhs):
 	i, j = 0, 0
@@ -23,8 +24,10 @@ def search(keywords, idx):
 	def size_cmp(lhs, rhs):
 		return len(lhs) - len(rhs)
 		
+	stemmer = Stemmer.Stemmer('russian')
 	docs = []
 	for keyword in keywords:
+		keyword = stemmer.stemWord(keyword)
 		docs.append(idx.docids(keyword.lower()))
 			
 	docs.sort(size_cmp)

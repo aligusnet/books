@@ -4,6 +4,7 @@ import os
 import sys
 import struct
 import fnmatch
+import Stemmer
 
 import epub
 
@@ -27,6 +28,7 @@ def create_index(root):
 	index = []
 	lexid = 0
 	docid = 0
+	stemmer = Stemmer.Stemmer('russian')
 	for parent, dirs, files in os.walk(root):
 		for name in files:
 			if fnmatch.fnmatch(name, u'*.epub'):
@@ -38,6 +40,7 @@ def create_index(root):
 					lex = get_lexems(info.author)
 					lex.extend(get_lexems(info.title))
 					for w in lex:
+						w = stemmer.stemWord(w)
 						if not dictionary.has_key(w):
 							dictionary[w] = lexid
 							lexid += 1

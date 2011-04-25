@@ -1,0 +1,43 @@
+This is catalogizer for epub library. This is detailed description in russian below.
+
+Requitments:
+* lxml: easy_install lxml
+
+Brief description:
+
+* catalogizer.pu source_dir target_dir
+Catalogize library from source_dir to target_dir.
+
+* index.py source_dir
+Create inverted index.
+
+* search.py source_dir keywords
+Search books by inverted index
+
+*epub.by
+Parser epub files.
+
+------------------------------------
+
+Каталогизация электронной библиотеки в формате epub и информационный поиск в ней.
+
+Цели:
+* навести наконец порядок в десятках гигагбайт электронных книг
+* изучить Python
+
+Использование и описание:
+
+Используется бибилиотека lxml. Если еще не установлена, выполните команду: 
+$ easy_install lxml
+
+* catalogizer.py source_dir target_dir
+Обходит все книги epub в каталоге и подкаталогах epub и вытаскивает из метаданных название книги и имя автора. Размещает книги в target_dir/первая буква фамилии автора/полное имя автора/название книги.epub
+
+* index.py source_dir
+Создает поисковый индекс по авторам и названиям книг epub в source_dir. Автора и название берет из метаданных книги. В дальнейшем, наверное, добавлю в индекс описание книги из метаданных и язык.
+
+* search.py source_dir ключевые слова
+Ищет с использованием предварительно созданного индекса index.py.
+
+* epub.py
+Парсер книг формата epub. На данный момент считывает только автора и название книги, если соответствующих тегов в метаинформации нет кидает исключение. 

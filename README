@@ -4,6 +4,8 @@ Requitments:
 * lxml: easy_install lxml
 * Snowball stemming for Python: http://snowball.tartarus.org/download.php. Unzip PyStemmer-1.1.0.tar.gz and install: python setup.py build && python setup.py install. For details see README of the library.
 
+Important Notice for Mac OS X with Xcode 4. Xcode 4 are no longer support PPC arch, so disable PPC: export ARCHFLAGS='-arch i386 -arch x86_64'. Otherwise you'll get compuiler error like this: 'fatal error: error writing to -: Broken pipe'.
+
 Brief description:
 
 * catalogizer.pu source_dir target_dir
@@ -27,6 +29,8 @@ Parser epub files.
 Зависимости:
 * Библиотека lxml. Если еще не установлена, выполните команду: $ easy_install lxml
 * Snowball stemming for Python: http://snowball.tartarus.org/download.php. Распакуйте PyStemmer-1.1.0.tar.gz и установите командами: python setup.py build && python setup.py install. Подробности смотрите в файде README библиотеки.
+
+Важное замечание для Mac OS X с установленным Xcode 4. Т.к. Xcode 4 больше не поддерживает архитектуру PPC, отключите ее командой: export ARCHFLAGS='-arch i386 -arch x86_64'. Иначе получите ошибку компиляции вроде этой: 'fatal error: error writing to -: Broken pipe'.
 
 * catalogizer.py source_dir target_dir
 Обходит все книги epub в каталоге и подкаталогах epub и вытаскивает из метаданных название книги и имя автора. Размещает книги в target_dir/первая буква фамилии автора/полное имя автора/название книги.epub

@@ -2,7 +2,7 @@ import os
 import sys
 import epub
 import index
-import Stemmer
+import lexems
 
 def intersect(lhs, rhs):
 	i, j = 0, 0
@@ -24,10 +24,9 @@ def search(keywords, idx):
 	def size_cmp(lhs, rhs):
 		return len(lhs) - len(rhs)
 		
-	stemmer = Stemmer.Stemmer('russian')
+	keywords = lexems.get(keywords)
 	docs = []
 	for keyword in keywords:
-		keyword = stemmer.stemWord(keyword)
 		docs.append(idx.docids(keyword.lower()))
 			
 	docs.sort(size_cmp)
@@ -54,7 +53,7 @@ if __name__ == '__main__':
 	for i in xrange(2, len(sys.argv)):
 		keywords.append(sys.argv[i].decode('utf-8'))
 		
-	docs = search(keywords, idx)
+	docs = search(' '.join(keywords), idx)
 	for file_name in docs:
 		info = epub.get_info(file_name)
 		print info.author.strip() + '.', info.title + '. (' + file_name + ')'

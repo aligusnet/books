@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 import os
 import sys
 import struct
@@ -34,7 +35,7 @@ def create_index(root):
 						index[dictionary[w]].append(docid)
 					docid += 1
 				except Exception, ex:
-					print ex, ': error while processing file: ' + full_name
+					print (ex, ': error while processing file:', full_name)
 				
 	docid_file.close()
 	docid_idx.close()
@@ -111,6 +112,6 @@ class Index(object):
 
 if __name__ == '__main__':
 	if len(sys.argv) != 2:
-		print "Usage: " + sys.argv[0] + ' dir'
+		print ('Usage: python', sys.argv[0], ' dir')
 		os._exit(os.EX_USAGE)
 	create_index(sys.argv[1])

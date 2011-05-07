@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from __future__ import print_function
 import os
 import sys
 import fnmatch
@@ -33,10 +34,10 @@ def build_tree(source_dir, target_dir):
                     shutil.copy(full_name, target_name)
                     os.chmod(target_name, DEFAULT_FILE_MODE)
                 except Exception, ex:
-                    print ex, ': error while processing file: ' + full_name
+                    print (ex, ': error while processing file:', full_name)
 
 if __name__ == "__main__":
     if len(sys.argv) != 3:
-        print "Usage: " + sys.argv[0] + ' source_dir target_dir'
+        print ('Usage: python', sys.argv[0], ' source_dir target_dir')
         os._exit(os.EX_USAGE)
     build_tree(sys.argv[1], sys.argv[2])

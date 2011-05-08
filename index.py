@@ -4,14 +4,18 @@ from __future__ import print_function
 import os
 import sys
 import struct
-import fnmatch
 
+import config
 import lexems
 import epub
 
 def create_index(root):
-	docid_file = open(os.path.join(root, u'docid'), 'wb')
-	docid_idx = open(os.path.join(root, u'docid.idx'), 'wb')
+	index_root = os.path.join(root, config.IndexPath)
+	if not os.path.exists(index_root):
+		os.makedirs(index_root, config.DirectoryDefaultMode)
+	
+	docid_file = open(os.path.join(index_root, 'docid'), 'wb')
+	docid_idx = open(os.path.join(index_root, 'docid.idx'), 'wb')
 	
 	dictionary = {}
 	index = []
@@ -19,29 +23,31 @@ def create_index(root):
 	docid = 0
 	for parent, dirs, files in os.walk(root):
 		for name in files:
-			if fnmatch.fnmatch(name, u'*.epub'):
+			if name.lower().endswith('.epub'):
+				full_name = os.path.join(parent, name)
 				try:
-					full_name = os.path.join(parent, name)
-					docid_idx.write(struct.pack('i', docid_file.tell()))
-					docid_file.write(full_name)
 					info = epub.get_info(full_name)
-					lex = lexems.get(info.author)
-					lex.extend(lexems.get(info.title))
-					for w in lex:
-						if not dictionary.has_key(w):
-							dictionary[w] = lexid
-							lexid += 1
-							index.append([])
-						index[dictionary[w]].append(docid)
-					docid += 1
 				except Exception, ex:
-					print (ex, ': error while processing file:', full_name)
-				
+					print('error while parsing file:', full_name, ex)
+					continue
+					
+				docid_idx.write(struct.pack('i', docid_file.tell()))
+				docid_file.write(full_name)
+				lex = lexems.get(info.authors())
+				lex += lexems.get(info.titles())
+				for w in lex:
+					if not dictionary.has_key(w):
+						dictionary[w] = lexid
+						lexid += 1
+						index.append([])
+					if len(index[dictionary[w]]) == 0 or index[dictionary[w]][-1] != docid:
+						index[dictionary[w]].append(docid)
+				docid += 1
 	docid_file.close()
 	docid_idx.close()
 				
-	index_file = open(os.path.join(root, u'index'), 'wb')
-	dict_file = open(os.path.join(root, u'dict'), 'wb')
+	index_file = open(os.path.join(index_root, 'index'), 'wb')
+	dict_file = open(os.path.join(index_root, 'dict'), 'wb')
 	for key, value in dictionary.items():
 		for id in index[value]:
 			index_file.write(struct.pack('i', id))
@@ -54,11 +60,12 @@ def create_index(root):
 	
 class Index(object):
 	def __init__(self, root_dir):
-		self.docid_file = open(os.path.join(root_dir, u'docid'), 'rb')
-		self.index_file = open(os.path.join(root_dir, u'index'), 'rb')
+		root_dir = os.path.join(root_dir, config.IndexPath)
+		self.docid_file = open(os.path.join(root_dir, 'docid'), 'rb')
+		self.index_file = open(os.path.join(root_dir, 'index'), 'rb')
 		
-		self.docid_idx = self._read_idx(os.path.join(root_dir, u'docid.idx'))
-		self.dictionary = self._read_dictionary(os.path.join(root_dir, u'dict'))
+		self.docid_idx = self._read_idx(os.path.join(root_dir, 'docid.idx'))
+		self.dictionary = self._read_dictionary(os.path.join(root_dir, 'dict'))
 		
 	def document(self, docid):
 		if len(self.docid_idx) <= docid:

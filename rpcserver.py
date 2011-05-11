@@ -11,19 +11,26 @@ import index
 import search
 import epub
 
-def __makeResultEntry(docid):
-	entry = {'id':docid}
-	file_path = idx.document(docid)
-	info = epub.get_info(file_path)
-	entry['author'] = info.authors()
-	entry['title'] = info.titles()
-	return entry
+class RpcSearcher(object):
+	def __init__(self, index_path):
+		self.idx = index.Index(index_path)
+		
+	def __makeResultEntry(self, docid):
+		entry = {'id':docid}
+		file_path = self.idx.document(docid)
+		info = epub.get_info(file_path)
+		entry['author'] = info.authors()
+		entry['title'] = info.titles()
+		return entry
 	
-def __search(keywords, page=0, resultsOnPage=10):
-	docs = search.search(keywords, idx)
-	docs = docs[page*resultsOnPage:(page+1)*resultsOnPage]
-	result = [__makeResultEntry(docid) for docid in docs]
-	return result
+	def search(self, keywords, page=0, resultsOnPage=10):
+		docs = search.search(keywords, self.idx)
+		docs = docs[page*resultsOnPage:(page+1)*resultsOnPage]
+		result = [self.__makeResultEntry(docid) for docid in docs]
+		return result
+		
+	def getFilePath(self, docid):
+		return self.idx.document(docid)
 
 class RequestHandler(SimpleXMLRPCRequestHandler):
 	rpc_paths = ('/RPC2',)
@@ -33,11 +40,13 @@ if __name__ == '__main__':
 		print ('Usage: python', sys.argv[0], 'path/to/lib')
 		os._exit(os.EX_USAGE)
 	
-	global idx
-	idx = index.Index(sys.argv[1].decode('utf-8'))
-	
 	server = SimpleXMLRPCServer((config.RPCServerHost, config.RPCServerPort), requestHandler=RequestHandler)
+	print('listening on port %d...' % config.RPCServerPort)
 	server.register_introspection_functions()
 	
-	server.register_function(__search, 'search')
-	server.serve_forever()
+	server.register_instance(RpcSearcher(sys.argv[1].decode(config.SystemCodePage)))
+	
+	try:
+		server.serve_forever()
+	except KeyboardInterrupt:
+		print('stopping server...')

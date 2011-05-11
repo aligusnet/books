@@ -9,11 +9,10 @@ def printEntry(entry):
 
 if __name__ == '__main__':
 	proxy = xmlrpclib.ServerProxy('http://'+config.RPCServerHost+':'+str(config.RPCServerPort))
-	
 	print ('press Ctrl-D to exit')
 	while True:
 		try:
-			keywords = raw_input('# ').decode('utf-8')
+			keywords = raw_input('# ').decode(config.SystemCodePage)
 			result = proxy.search(keywords)
 			map(printEntry, result)
 		except EOFError:

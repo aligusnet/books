@@ -32,7 +32,7 @@ def create_index(root):
 					continue
 					
 				docid_idx.write(struct.pack('i', docid_file.tell()))
-				docid_file.write(full_name)
+				docid_file.write(full_name.encode(config.FileCodePage))
 				lex = lexems.get(info.authors())
 				lex += lexems.get(info.titles())
 				for w in lex:
@@ -51,7 +51,7 @@ def create_index(root):
 	for key, value in dictionary.items():
 		for id in index[value]:
 			index_file.write(struct.pack('i', id))
-		dict_file.write('%i %s\n' % (index_file.tell(), key.encode('utf-8')))
+		dict_file.write('%i %s\n' % (index_file.tell(), key.encode(config.FileCodePage)))
 	index_file.close()
 	dict_file.close()
 	
@@ -72,7 +72,7 @@ class Index(object):
 			return u''
 		info = self.docid_idx[docid]
 		self.docid_file.seek(info[0])
-		return self.docid_file.read(info[1]).decode('utf-8')
+		return self.docid_file.read(info[1]).decode(config.FileCodePage)
 		
 	def docids(self, lexem):
 		INT_SIZE = 4
@@ -109,7 +109,7 @@ class Index(object):
 			for line in dict_file:
 				parts = line.rstrip().split(' ')
 				curr_pos = int(parts[0])
-				lexem = parts[1].decode('utf-8')
+				lexem = parts[1].decode(config.FileCodePage)
 				dictionary[lexem] = (start_pos, curr_pos-start_pos)
 				start_pos = curr_pos
 
@@ -121,4 +121,4 @@ if __name__ == '__main__':
 	if len(sys.argv) != 2:
 		print ('Usage: python', sys.argv[0], ' dir')
 		os._exit(os.EX_USAGE)
-	create_index(sys.argv[1])
+	create_index(sys.argv[1].decode(config.SystemCodePage))

@@ -40,12 +40,8 @@ def search(keywords, idx):
 	docids = docs[0]
 	for i in xrange(1, len(docs)):
 		docids = intersect(docids, docs[i])
-	
-	result = []
-	for docid in docids:
-		result.append(idx.document(docid))
 		
-	return result
+	return docids
 
 def printResult(docs):
 	for file_name in docs:
@@ -66,7 +62,7 @@ if __name__ == '__main__':
 		docs = search(' '.join(keywords), idx)
 		printResult(docs)
 		os._exit(os.EX_OK)
-		
+
 	print ('press Ctrl-D to exit')
 	while True:
 		try:
@@ -74,5 +70,6 @@ if __name__ == '__main__':
 		except EOFError:
 			print ('')
 			break
-		docs = search(keywords, idx)
+		docids = search(keywords, idx)
+		docs = [idx.document(docid) for docid in docids]
 		printResult(docs)

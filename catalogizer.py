@@ -44,4 +44,4 @@ if __name__ == "__main__":
 	if len(sys.argv) != 3:
 		print ('Usage: python', sys.argv[0], ' source_dir target_dir')
 		os._exit(os.EX_USAGE)
-	build_tree(sys.argv[1], sys.argv[2])
+	build_tree(sys.argv[1].decode(config.SystemCodePage), sys.argv[2].decode(config.SystemCodePage))

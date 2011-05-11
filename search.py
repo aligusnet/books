@@ -6,6 +6,7 @@ import sys
 import epub
 import index
 import lexems
+import config
 
 def intersect(lhs, rhs):
 	i, j = 0, 0
@@ -57,12 +58,12 @@ if __name__ == '__main__':
 		print ('Usage: python', sys.argv[0], 'dir [keywords]')
 		os._exit(os.EX_USAGE)
 	
-	idx = index.Index(sys.argv[1].decode('utf-8'))
+	idx = index.Index(sys.argv[1].decode(config.SystemCodePage))
 	
 	if len(sys.argv) > 2:
 		keywords = []
 		for i in xrange(2, len(sys.argv)):
-			keywords.append(sys.argv[i].decode('utf-8'))
+			keywords.append(sys.argv[i].decode(config.SystemCodePage))
 		docs = search(' '.join(keywords), idx)
 		printResult(docs)
 		os._exit(os.EX_OK)
@@ -70,7 +71,7 @@ if __name__ == '__main__':
 	print ('press Ctrl-D to exit')
 	while True:
 		try:
-			keywords = raw_input('# ').decode('utf-8')
+			keywords = raw_input('# ').decode(config.SystemCodePage)
 		except EOFError:
 			print ('')
 			break

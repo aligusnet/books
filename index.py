@@ -26,7 +26,7 @@ def create_index(root):
 			if name.lower().endswith('.epub'):
 				full_name = os.path.join(parent, name)
 				try:
-					info = epub.get_info(full_name)
+					info = epub.Info(full_name)
 				except Exception, ex:
 					print('error while parsing file:', full_name, ex)
 					continue

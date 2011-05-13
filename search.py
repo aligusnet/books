@@ -46,7 +46,7 @@ def search(keywords, idx):
 
 def printResult(docs):
 	for file_name in docs:
-		info = epub.get_info(file_name)
+		info = epub.Info(file_name)
 		print (info.authors().strip() + '.', info.titles().strip() + '. (' + file_name + ')')
 
 if __name__ == '__main__':

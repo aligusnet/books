@@ -3,6 +3,7 @@
 from __future__ import print_function
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 from SimpleXMLRPCServer import SimpleXMLRPCRequestHandler
+import xmlrpclib
 import sys
 import os
 
@@ -18,7 +19,7 @@ class RpcSearcher(object):
 	def __makeResultEntry(self, docid):
 		entry = {'id':docid}
 		file_path = self.idx.document(docid)
-		info = epub.get_info(file_path)
+		info = epub.Info(file_path)
 		entry['author'] = info.authors()
 		entry['title'] = info.titles()
 		return entry
@@ -31,6 +32,23 @@ class RpcSearcher(object):
 		
 	def getFilePath(self, docid):
 		return self.idx.document(docid)
+		
+	def detailed_info(self, docid):
+		entry = {'id':docid}
+		file_path = self.idx.document(docid)
+		reader = epub.Reader(file_path)
+		entry['author'] = u''.join(reader.read_authors())
+		entry['title'] = u''.join(reader.read_titles())
+		entry['description'] = u''.join(reader.read_descriptions())
+		cover = reader.read_cover()
+		entry['cover'] = len(cover[1]) != 0
+		return entry
+		
+	def get_cover(self, docid):
+		file_path = self.idx.document(docid)
+		reader = epub.Reader(file_path)
+		cover = reader.read_cover() 
+		return cover[0], xmlrpclib.Binary(cover[1])
 
 class RequestHandler(SimpleXMLRPCRequestHandler):
 	rpc_paths = ('/RPC2',)

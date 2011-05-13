@@ -22,14 +22,14 @@ def build_tree(source_dir, target_dir):
 			if name.lower().endswith('.epub'):
 				full_name = os.path.join(root, name)
 				try:
-					info = epub.get_info(full_name)
+					info = epub.Info(full_name)
 				except Exception, ex:
 					print('error while parsing file:', full_name, ex)
 					continue
 				
-				if info.author and info.title:
-					creator, letter = normalize_name(info.author[0])
-					title, _ = normalize_name(info.title[0])
+				if info.author_ and info.title_:
+					creator, letter = normalize_name(info.author_[0])
+					title, _ = normalize_name(info.title_[0])
 					target_name = os.path.join(target_dir, letter, creator, title+'.epub')
 					creator_dir = os.path.dirname(target_name)
 					if not os.path.exists(creator_dir):

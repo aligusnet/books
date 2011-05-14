@@ -21,6 +21,7 @@ def create_index(root):
 	index = []
 	lexid = 0
 	docid = 0
+	root = os.path.abspath(root)
 	for parent, dirs, files in os.walk(root):
 		for name in files:
 			if name.lower().endswith('.epub'):

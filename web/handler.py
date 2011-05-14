@@ -17,6 +17,7 @@ class Application(object):
 		
 		page = wsgiref.util.shift_path_info(environ)
 		
+		self.app_url = environ['wsgi.url_scheme'] + '://' + environ['HTTP_HOST'] + config.ApplicationPath
 		self.environ = environ
 		self.start_response = start_response
 		self.query_string = urlparse.parse_qs(environ['QUERY_STRING'])
@@ -48,7 +49,7 @@ class Application(object):
 		
 	def index(self):
 		self.response_headers.append(('Content-Type', 'text/html; charset=utf-8'))
-		self.response_body = (templates.html % u'').encode('utf-8')
+		self.response_body = (templates.html % (self.app_url, u'')).encode('utf-8')
 		
 	def search(self):
 		self.response_headers.append(('Content-Type', 'text/html; charset=utf-8'))
@@ -70,7 +71,7 @@ class Application(object):
 		result = map(lambda entry: templates.entry % entry, result)
 		result = '\n'.join(result)
 		result_table = templates.result % {'keywords': cgi.escape(keywords), 'rows': result, 'ndocs': ndocs, 'pagerefs': pagerefs}
-		response_body = templates.html % result_table
+		response_body = templates.html % (self.app_url, result_table)
 		self.response_body = response_body.encode('utf-8')
 	
 	def description(self):
@@ -79,7 +80,7 @@ class Application(object):
 			docid = int(self.path_parts[1])
 			proxy = self.__get_proxy()
 			info = proxy.detailed_info(docid)
-			info['app_path'] = config.ApplicationPath
+			info['app_url'] = self.app_url
 			if info['cover']:
 				info['image'] = templates.image % info
 			else:
@@ -120,9 +121,7 @@ class Application(object):
 
 	def move_to_index(self):
 		self.status = '301 Moved Permanently'
-		redirect_url = self.environ['wsgi.url_scheme'] + '://' + self.environ['HTTP_HOST'] + config.ApplicationPath
-		
 		self.response_headers.append(('Content-Type', 'text/html; charset=utf-8'))
-		self.response_headers.append(('Location', redirect_url))
-		response_body = templates.move % redirect_url
+		self.response_headers.append(('Location', self.app_url))
+		response_body = templates.move % self.app_url
 		self.response_body = response_body.encode('utf-8')

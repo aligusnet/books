@@ -60,7 +60,7 @@ class Application(object):
 		
 		npages = (ndocs + config.DocumentsOnPage-1)/config.DocumentsOnPage
 		pagerefs = ''
-		pageref_params = {'keywords': keywords}
+		pageref_params = {'keywords': cgi.urllib.quote_plus(keywords.encode('utf-8'))}
 		for p in range(npages):
 			pageref_params['page'] = p
 			if page != p:

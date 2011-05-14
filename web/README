@@ -14,5 +14,7 @@ Alias /books/robots.txt /var/wwww/robots.txt
 
 Не забудьте в config.py веб-части задать ApplicationPath = '/books/'.
 
+Затем перезапустите апач: service apache2 restart
+
 Подробнее о настройке mod_wsgi см.: http://code.google.com/p/modwsgi/wiki/QuickConfigurationGuide
 

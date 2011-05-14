@@ -4,6 +4,7 @@ import urlparse
 import cgi
 import xmlrpclib
 import wsgiref.util
+import uuid
 
 import config
 import templates
@@ -33,6 +34,8 @@ class Application(object):
 			self.description()
 		elif page == 'image':
 			self.image()
+		elif page == 'book':
+			self.download_book()
 		else:
 			self.move_to_index()
 		
@@ -49,13 +52,24 @@ class Application(object):
 		
 	def search(self):
 		self.response_headers.append(('Content-Type', 'text/html; charset=utf-8'))
-		keywords = cgi.escape(self.query_string.get('keywords', [''])[0]).decode('utf-8')
+		keywords = self.query_string.get('keywords', [''])[0].decode('utf-8')
+		page = int(self.query_string.get('page', ['0'])[0])
 		
 		proxy = self.__get_proxy()
-		result = proxy.search(keywords, 0, 30)
+		ndocs, result = proxy.search(keywords, page, config.DocumentsOnPage)
+		
+		npages = (ndocs + config.DocumentsOnPage-1)/config.DocumentsOnPage
+		pagerefs = ''
+		pageref_params = {'keywords': keywords}
+		for p in range(npages):
+			pageref_params['page'] = p
+			if page != p:
+				pagerefs += templates.pageref % pageref_params
+			else:
+				pagerefs += templates.page % pageref_params
 		result = map(lambda entry: templates.entry % entry, result)
 		result = '\n'.join(result)
-		result_table = templates.result % {'keywords': keywords, 'rows': result}
+		result_table = templates.result % {'keywords': cgi.escape(keywords), 'rows': result, 'ndocs': ndocs, 'pagerefs': pagerefs}
 		response_body = templates.html % result_table
 		self.response_body = response_body.encode('utf-8')
 	
@@ -86,9 +100,23 @@ class Application(object):
 			cover = proxy.get_cover(docid)
 			self.response_body = cover[1].data
 			self.response_headers.append(('Content-Type', self.__image_content_type(cover[0])))
+			self.response_headers.append(('Content-Disposition', 'Inline; filename=%s' % cover[0].encode('utf-8')))
 			self.response_headers.append(('Title', cover[0].encode('utf-8')))
 		else:
 			self.response_headers.append(('Content-Type', 'image'))
+			
+	def download_book(self):
+		if len(self.path_parts) > 1:
+			docid = int(self.path_parts[1])
+			proxy = self.__get_proxy()
+			data = proxy.get_book(docid).data
+			if len(self.path_parts) > 2:
+				name = self.path_parts[2]
+			else:
+				name = str(uuid.uui4())+'.epub'
+			self.response_body = data
+			self.response_headers.append(('Content-Type', ContentType.extensions['epub']))
+			self.response_headers.append(('Content-Disposition', 'Attachment; filename=%s' % name))
 
 	def move_to_index(self):
 		self.status = '301 Moved Permanently'

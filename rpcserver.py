@@ -11,10 +11,12 @@ import config
 import index
 import search
 import epub
+import cache
 
 class RpcSearcher(object):
 	def __init__(self, index_path):
 		self.idx = index.Index(index_path)
+		self.cache = cache.CacheQueue(100)
 		
 	def __makeResultEntry(self, docid):
 		entry = {'id':docid}
@@ -25,13 +27,19 @@ class RpcSearcher(object):
 		return entry
 	
 	def search(self, keywords, page=0, resultsOnPage=10):
-		docs = search.search(keywords, self.idx)
+		if self.cache.has_key(keywords):
+			docs = self.cache[keywords]
+		else:
+			docs = search.search(keywords, self.idx)
+			self.cache.append(keywords, docs)
+		ndocs = len(docs)
 		docs = docs[page*resultsOnPage:(page+1)*resultsOnPage]
 		result = [self.__makeResultEntry(docid) for docid in docs]
-		return result
-		
-	def getFilePath(self, docid):
-		return self.idx.document(docid)
+		return (ndocs, result)
+
+	def get_book(self, docid):
+		path = self.idx.document(docid)
+		return xmlrpclib.Binary(open(path).read(0))
 		
 	def detailed_info(self, docid):
 		entry = {'id':docid}

@@ -6,3 +6,4 @@ RPCServerPort = 5555
 
 WebServerPort = 8000
 ApplicationPath = '/'
+DocumentsOnPage = 10

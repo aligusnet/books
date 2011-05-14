@@ -13,7 +13,8 @@ if __name__ == '__main__':
 	while True:
 		try:
 			keywords = raw_input('# ').decode(config.SystemCodePage)
-			result = proxy.search(keywords)
+			ndocs, result = proxy.search(keywords)
+			print('found %d books' % ndocs)
 			map(printEntry, result)
 		except EOFError:
 			print ('')

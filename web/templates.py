@@ -13,15 +13,19 @@ html = """
 """
 
 result = """
-<h3>%(keywords)s</h3>
+<h3>%(keywords)s, found %(ndocs)d books</h3>
 <table>
 %(rows)s
 </table>
+%(pagerefs)s
 """
 
 entry = """
 <tr><td>%(id)d.</td> <td><a href="description/%(id)d/"> %(author)s. <b>%(title)s</b></td></tr>
 """
+
+pageref = " <a href=search?keywords=%(keywords)s&page=%(page)d>%(page)d</a> |"
+page = " <big>%(page)d</big> |"
 
 description = """
 <html>
@@ -29,6 +33,7 @@ description = """
 	<p>%(author)s</p>
 	<p><b>%(title)s</b></p>
 	<p>%(description)s</p>
+	<p><a href='%(app_path)sbook/%(id)d/%(title)s.epub'>download book</p>
 	%(image)s
 </body>
 </html>

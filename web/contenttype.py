@@ -28,5 +28,6 @@ class ContentType(object):
 		'shtml': 'text/html',
 		'htm': 'text/html',
 		'asc': 'text/plain',
-		'txt': 'text/plain'	
+		'txt': 'text/plain',
+		'epub': 'application/epub+zip'
 	}

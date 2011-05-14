@@ -39,7 +39,7 @@ class RpcSearcher(object):
 
 	def get_book(self, docid):
 		path = self.idx.document(docid)
-		return xmlrpclib.Binary(open(path).read(0))
+		return xmlrpclib.Binary(open(path).read())
 		
 	def detailed_info(self, docid):
 		entry = {'id':docid}

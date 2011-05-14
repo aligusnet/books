@@ -2,9 +2,9 @@
 
 Положим, что web часть books установлена в /var/www/books и приложение должно быть доступно по адресу http://hostname/books/. Тогда в конфигурационном файле апача нужно прописать:
 
-WSGIScriptAlias /books /media/wd/books/traum/books/web/books.wsgi
+WSGIScriptAlias /books /var/www/books/books.wsgi
 
-<Directory /media/wd/books/traum/books/web>
+<Directory /var/www/books/web>
 Order allow,deny
 Allow from all
 </Directory>

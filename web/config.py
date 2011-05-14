@@ -5,3 +5,4 @@ RPCServerHost = 'localhost'
 RPCServerPort = 5555
 
 WebServerPort = 8000
+ApplicationPath = '/'

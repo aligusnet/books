@@ -37,11 +37,11 @@ class RpcSearcher(object):
 		entry = {'id':docid}
 		file_path = self.idx.document(docid)
 		reader = epub.Reader(file_path)
-		entry['author'] = u''.join(reader.read_authors())
-		entry['title'] = u''.join(reader.read_titles())
+		entry['author'] = u', '.join(reader.read_authors())
+		entry['title'] = u', '.join(reader.read_titles())
 		entry['description'] = u''.join(reader.read_descriptions())
 		cover = reader.read_cover()
-		entry['cover'] = len(cover[1]) != 0
+		entry['cover'] = cover[0]
 		return entry
 		
 	def get_cover(self, docid):

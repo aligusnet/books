@@ -5,7 +5,7 @@ import handler
 import config
 
 if __name__ == '__main__':
-	httpd = make_server('', config.WebServerPort, handler.application)
+	httpd = make_server('', config.WebServerPort, handler.Application)
 	try:
 		httpd.serve_forever()
 	except KeyboardInterrupt:

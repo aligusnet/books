@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 html = """
 <html>
 <body>
@@ -19,7 +20,7 @@ result = """
 """
 
 entry = """
-<tr><td>%(id)d.</td> <td><a href="description?id=%(id)d"> %(author)s. <b>%(title)s</b></td></tr>
+<tr><td>%(id)d.</td> <td><a href="description/%(id)d/"> %(author)s. <b>%(title)s</b></td></tr>
 """
 
 description = """
@@ -34,5 +35,16 @@ description = """
 """
 
 image = """
-<img src=image?id=%(id)d />
+<img src=%(app_path)simage/%(id)d/%(cover)s />
+"""
+
+move = """
+<html><head>
+<title>301 Moved Permanently</title>
+</head><body>
+<h1>Moved Permanently</h1>
+<p>The document has moved <a href="%s">here</a>.</p>
+<hr>
+</body></html>
+
 """

@@ -2,62 +2,99 @@
 #from __future__ import unicode_literals
 import urlparse
 import cgi
-
 import xmlrpclib
+import wsgiref.util
+
 import config
 import templates
+from contenttype import ContentType
 
-def strEntry(entry):
-	return templates.entry % entry
-
-def search(keywords):
-	proxy = xmlrpclib.ServerProxy('http://'+config.RPCServerHost+':'+str(config.RPCServerPort))
-	result = proxy.search(keywords, 0, 30)
-	result = map(strEntry, result)
-	result = '\n'.join(result)
-	return {'keywords': keywords.encode('utf-8'), 'rows': result.encode('utf-8')}
-
-def description(docid):
-	proxy = xmlrpclib.ServerProxy('http://'+config.RPCServerHost+':'+str(config.RPCServerPort))
-	result = proxy.detailed_info(docid)
-	if result['cover']:
-		result['image'] = templates.image % result
-	else:
-		result['image'] = ''
-	return templates.description % result
-	
-def image(docid):
-	proxy = xmlrpclib.ServerProxy('http://'+config.RPCServerHost+':'+str(config.RPCServerPort))
-	cover = proxy.get_cover(docid)
-	return (cover[0], cover[1].data)
-
-def application(environ, start_response):
-	path = environ['PATH_INFO']
-	qs = urlparse.parse_qs(environ['QUERY_STRING'])
-	response_headers = [('Content-Type', 'text/html; charset=utf-8')]
-	response_body = ''
-	if path.endswith('search'):
-		if 'keywords' in qs:
-			sr = search(cgi.escape(qs['keywords'][0]).decode('utf-8'))
+class Application(object):
+	def __init__(self, environ, start_response):
+		if config.ApplicationPath[-1] != '/':
+			config.ApplicationPath += '/'
+		
+		page = wsgiref.util.shift_path_info(environ)
+		
+		self.environ = environ
+		self.start_response = start_response
+		self.query_string = urlparse.parse_qs(environ['QUERY_STRING'])
+		self.path_parts = self.environ['PATH_INFO'].split('/')
+		
+		self.response_headers = []
+		self.status = '200 OK'
+		self.response_body = ''
+		
+		if page == '':
+			self.index()
+		elif page == 'search':
+			self.search()
+		elif page == 'description':
+			self.description()
+		elif page == 'image':
+			self.image()
 		else:
-			sr = {'keywords': '', 'rows': ''}
-		result_table = templates.result % sr
+			self.move_to_index()
+		
+	def __iter__(self):
+		self.start_response(self.status, self.response_headers)
+		yield self.response_body
+		
+	def __get_proxy(self):
+		return xmlrpclib.ServerProxy('http://'+config.RPCServerHost+':'+str(config.RPCServerPort))
+		
+	def index(self):
+		self.response_headers.append(('Content-Type', 'text/html; charset=utf-8'))
+		self.response_body = (templates.html % u'').encode('utf-8')
+		
+	def search(self):
+		self.response_headers.append(('Content-Type', 'text/html; charset=utf-8'))
+		keywords = cgi.escape(self.query_string.get('keywords', [''])[0]).decode('utf-8')
+		
+		proxy = self.__get_proxy()
+		result = proxy.search(keywords, 0, 30)
+		result = map(lambda entry: templates.entry % entry, result)
+		result = '\n'.join(result)
+		result_table = templates.result % {'keywords': keywords, 'rows': result}
 		response_body = templates.html % result_table
-	elif path.endswith('description'):
-		if 'id' in qs:
-			response_body = description(int(qs['id'][0])).encode('utf-8')
+		self.response_body = response_body.encode('utf-8')
+	
+	def description(self):
+		self.response_headers.append(('Content-Type', 'text/html; charset=utf-8'))
+		if len(self.path_parts) > 1:
+			docid = int(self.path_parts[1])
+			proxy = self.__get_proxy()
+			info = proxy.detailed_info(docid)
+			info['app_path'] = config.ApplicationPath
+			if info['cover']:
+				info['image'] = templates.image % info
+			else:
+				info['image'] = ''
+			response_body = templates.description % info
 		else:
-			response_body = 'incorrect document id'
-	elif path.endswith('image'):
-		response_headers = [('Content-Type', 'image')]
-		if 'id' in qs:
-			cover = image(int(qs['id'][0]))
-			response_body = cover[1]
-	else:
-		response_body = templates.html % ''
-	
-	status = '200 OK'
-	
-	response_headers.append(('Content-Length', str(len(response_body))))
-	start_response(status, response_headers)
-	return [response_body]
+			response_body = u'missed document id'
+		self.response_body = response_body.encode('utf-8')
+		
+	def __image_content_type(self, name):
+		ext = name.lower().split('.')[-1]
+		return ContentType.extensions.get(ext, 'image')
+			
+	def image(self):
+		if len(self.path_parts) > 1:
+			docid = int(self.path_parts[1])
+			proxy = self.__get_proxy()
+			cover = proxy.get_cover(docid)
+			self.response_body = cover[1].data
+			self.response_headers.append(('Content-Type', self.__image_content_type(cover[0])))
+			self.response_headers.append(('Title', cover[0].encode('utf-8')))
+		else:
+			self.response_headers.append(('Content-Type', 'image'))
+
+	def move_to_index(self):
+		self.status = '301 Moved Permanently'
+		redirect_url = self.environ['wsgi.url_scheme'] + '://' + self.environ['HTTP_HOST'] + config.ApplicationPath
+		
+		self.response_headers.append(('Content-Type', 'text/html; charset=utf-8'))
+		self.response_headers.append(('Location', redirect_url))
+		response_body = templates.move % redirect_url
+		self.response_body = response_body.encode('utf-8')

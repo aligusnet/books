@@ -43,7 +43,7 @@ description = """
 	<p>%(author)s</p>
 	<p><b>%(title)s</b></p>
 	<p>%(description)s</p>
-	<p><a href='book/%(id)d/%(title)s.epub'>download book</a></p>
+	<p><a href='book/%(id)d/%(short_title)s.epub'>download book</a></p>
 	%(image)s
 </body>
 </html>

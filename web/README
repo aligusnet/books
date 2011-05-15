@@ -1,4 +1,34 @@
-Настройка mod_wsgi для Apache2
+Web books is web inteface for indexed epub library. There is detailed description in russian below. 
+Wiki of the project: https://github.com/ialexander/books/wiki
+
+-------------------------------------------------
+
+Web books предоставляет web-интерфейс для доступа к библиотеке книг. Позволяет искать книги и закачивать на компьютер и мобильные устройства (iPnone и т.п.)
+
+Вики проекта: https://github.com/ialexander/books/wiki
+
+Web books может работать в двух режимах: с использованием встроенного web-сервера Python и на web-сервере Apache2 с установленным mod_wsgi. 
+
+Перед запуском web-сервера необходимо произвести следующие действия:
+
+0. Каталогизировать библиотеку с помощью catalogizer.py (необязательно)
+1. Проиндексировать исходную, или если выполнен пункт 0, каталогизированную библиотеку с помощью index.py
+2. С помощью rpcserver.py запустить RPC-сервер, предоставляющий доступ к проиндексированной библиотеке для web books.
+
+При желании можно протестировать индексацию библиотеки с помощью search.py и работу RPC-сервера с помощью rpcclient.py
+Подробности о работе этих приложений см. директорией выше, в корневом каталоге books.
+
+I. Использование встроенного web-сервера python.
+1. Убедитесь, что в config.py указаны правильные параметры RpcServerHost и RpcServerPort для доступа к RPC-серверу.
+2. Запустите сервер командой python server.py.
+
+Web books будет доступно по адресу htpp://localhost:8000/
+
+II Использование Apache2 с установленным mod_wsgi
+
+1. Убедитесь, что в config.py указаны правильные параметры RpcServerHost и RpcServerPort для доступа к RPC-серверу.
+
+2.Настройка mod_wsgi для Apache2
 
 Положим, что web часть books установлена в /var/www/books и приложение должно быть доступно по адресу http://hostname/books/. Тогда в конфигурационном файле апача нужно прописать:
 
@@ -18,3 +48,4 @@ Alias /books/robots.txt /var/wwww/robots.txt
 
 Подробнее о настройке mod_wsgi см.: http://code.google.com/p/modwsgi/wiki/QuickConfigurationGuide
 
+Web books будет доступно по адресу htpp://yourhost/books/

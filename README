@@ -1,4 +1,5 @@
-This is catalogizer for epub library. This is detailed description in russian below.
+This is catalogizer for epub library. There is detailed description in russian below.
+Wiki of the project: https://github.com/ialexander/books/wiki
 
 Requitments:
 * lxml: easy_install lxml
@@ -20,7 +21,13 @@ Search books by inverted index
 *epub.by
 Parser epub files.
 
-------------------------------------
+* rpcserver.py path/to/lib
+Start rpc-server. path/to/lib - path to indexed lib. 
+
+*rpcclient.py
+simple, test client for rpcserver.py
+
+-------------------------------------------
 
 Каталогизация электронной библиотеки в формате epub и информационный поиск в ней.
 Для более подробной информации смотрите wiki проекта: https://github.com/ialexander/books/wiki
@@ -44,3 +51,9 @@ Parser epub files.
 
 * epub.py
 Парсер книг формата epub. На данный момент считывает автора, название и язык произведения. 
+
+* rpcserver.py path/to/lib
+В аргументе указывается путь к директории с проиндексированной библиотекой. Для запуска используются параметры из config.py: RpcServerHost - имя хоста и RpcSeverPort - номер порта. Подробнее о предназначении и использовании rpcserver см. web/README
+
+*rpcclient.py
+Простой, тестовый клиент для rpcserver.py. Для подключения к серверу использует параметры config.py. 

@@ -53,7 +53,8 @@ class Application(object):
 
 	def search(self):
 		
-		def processEntry(entry):
+		def processEntry(entry, pos):
+			entry['pos'] = pos
 			if(entry['author']):
 				entry['author'] = u', '.join(entry['author'])
 			else:
@@ -66,21 +67,24 @@ class Application(object):
 		
 		self.response_headers.append(('Content-Type', 'text/html; charset=utf-8'))
 		keywords = self.query_string.get('keywords', [''])[0].decode('utf-8')
-		page = int(self.query_string.get('page', ['0'])[0])
+		page = int(self.query_string.get('page', ['1'])[0])-1
 		
 		proxy = self.__get_proxy()
 		ndocs, result = proxy.search(keywords, page, config.DocumentsOnPage)
 		
+		#paging
 		npages = (ndocs + config.DocumentsOnPage-1)/config.DocumentsOnPage
 		pagerefs = ''
-		pageref_params = {'keywords': cgi.urllib.quote_plus(keywords.encode('utf-8'))}
-		for p in range(npages):
-			pageref_params['page'] = p
-			if page != p:
-				pagerefs += templates.pageref % pageref_params
-			else:
-				pagerefs += templates.page % pageref_params
-		result = map(processEntry, result)
+		if npages > 1:
+			pageref_params = {'keywords': cgi.urllib.quote_plus(keywords.encode('utf-8'))}
+			for p in range(npages):
+				pageref_params['page'] = p+1
+				if page != p:
+					pagerefs += templates.pageref % pageref_params
+				else:
+					pagerefs += templates.page % pageref_params
+		
+		result = map(processEntry, result, range(page*config.DocumentsOnPage+1, min((page+1)*config.DocumentsOnPage, ndocs)+1))
 		result = '\n'.join(result)
 		result_table = templates.result % {'keywords': cgi.escape(keywords), 'rows': result, 'ndocs': ndocs, 'pagerefs': pagerefs}
 		response_body = templates.html % (self.app_url, result_table)

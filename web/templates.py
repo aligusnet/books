@@ -23,10 +23,11 @@ result = """
 """
 
 entry = """
-<p><a href="description/%(id)d/"><b>%(title)s</b></a><br />
+<div style='overflow:hidden;'><div style="float:left;width:50px;" align="right">%(pos)s.&nbsp;</div>
+<div style='float:left;width:500px'><a href="description/%(id)d/"><b>%(title)s</b></a><br />
 %(author)s.<br />
 &rarr;&nbsp;<a href='book/%(id)d/%(title)s.epub'>download book</a><br />
-</p>
+</p></div></div>
 """
 
 pageref = " <a href=search?keywords=%(keywords)s&page=%(page)d>%(page)d</a> |"

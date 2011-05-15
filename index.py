@@ -34,8 +34,8 @@ def create_index(root):
 					
 				docid_idx.write(struct.pack('i', docid_file.tell()))
 				docid_file.write(full_name.encode(config.FileCodePage))
-				lex = lexems.get(info.authors())
-				lex += lexems.get(info.titles())
+				lex = lexems.get(' '.join(info.authors()))
+				lex += lexems.get(' '.join(info.titles()))
 				for w in lex:
 					if not dictionary.has_key(w):
 						dictionary[w] = lexid

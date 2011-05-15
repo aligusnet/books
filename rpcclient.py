@@ -5,6 +5,8 @@ import xmlrpclib
 import config
 
 def printEntry(entry):
+	entry['author'] = ', '.join(entry['author'])
+	entry['title'] = ', '.join(entry['title'])
 	print('%(id)d. Author(s): %(author)s, Title: %(title)s' % entry)
 
 if __name__ == '__main__':

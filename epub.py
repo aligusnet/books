@@ -24,7 +24,8 @@ class Reader(object):
 		self.metadata = tree.xpath('/pkg:package/pkg:metadata',namespaces=self.ns)[0]
 		
 	def __read_metadata(self, tag):
-		return tuple(self.metadata.xpath('dc:%s/text()'%(tag), namespaces=self.ns))
+		res = tuple(unicode(elem) for elem in self.metadata.xpath('dc:%s/text()'%(tag), namespaces=self.ns))
+		return res
 		
 	def __read_data_file(self, file_name):
 		return self.zip.read(os.path.join(self.data_path, file_name))
@@ -74,16 +75,16 @@ class Info(object):
 		
 	def authors(self):
 		"""
-		I.authors() -> str
+		I.authors() -> []
 		
-		return string containing comma-separated list of authors
+		return list of authors
 		"""
-		return ', '.join(self.author_)
+		return self.author_
 		
 	def titles(self):
 		"""
-		I.titles() -> str
+		I.titles() -> []
 		
-		return string containing comma-separated list of titles
+		return list of titles
 		"""
-		return ', '.join(self.title_)
+		return self.title_

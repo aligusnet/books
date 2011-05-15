@@ -1,11 +1,14 @@
 from __future__ import unicode_literals
 html = """
 <html>
+<head>
+<title>&Beta;&iota;&beta;&lambda;&iota;&alpha;</title>
 <base href="%s" />
+</head>
 <body>
 	<form method="get" action="search">
 		<p>
-			books: <input type="text" name="keywords" />
+			&Beta;&iota;&beta;&lambda;&iota;&alpha; <input type="text" name="keywords"/>
 		</p>
 	</form>
 	%s
@@ -20,8 +23,9 @@ result = """
 """
 
 entry = """
-<p>%(author)s. <a href="description/%(id)d/"><b>%(title)s</b></a><br />
-&nbsp;&nbsp;&nbsp; <a href='book/%(id)d/%(title)s.epub'>download book</a><br />
+<p><a href="description/%(id)d/"><b>%(title)s</b></a><br />
+%(author)s.<br />
+&rarr;&nbsp;<a href='book/%(id)d/%(title)s.epub'>download book</a><br />
 </p>
 """
 
@@ -31,7 +35,7 @@ page = " <big>%(page)d</big> |"
 description = """
 <html>
 <head>
-<title>%(title)s</title>
+<title>&Beta;&iota;&beta;&lambda;&iota;&omicron;: %(short_title)s</title>
 <base href="%(app_url)s" />
 <head>
 <body>

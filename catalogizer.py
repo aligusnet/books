@@ -27,9 +27,9 @@ def build_tree(source_dir, target_dir):
 					print('error while parsing file:', full_name, ex)
 					continue
 				
-				if info.author_ and info.title_:
-					creator, letter = normalize_name(info.author_[0])
-					title, _ = normalize_name(info.title_[0])
+				if info.authors() and info.titles():
+					creator, letter = normalize_name(info.authors()[0])
+					title, _ = normalize_name(info.titles()[0])
 					target_name = os.path.join(target_dir, letter, creator, title+'.epub')
 					creator_dir = os.path.dirname(target_name)
 					if not os.path.exists(creator_dir):

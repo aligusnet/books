@@ -50,8 +50,20 @@ class Application(object):
 	def index(self):
 		self.response_headers.append(('Content-Type', 'text/html; charset=utf-8'))
 		self.response_body = (templates.html % (self.app_url, u'')).encode('utf-8')
-		
+
 	def search(self):
+		
+		def processEntry(entry):
+			if(entry['author']):
+				entry['author'] = u', '.join(entry['author'])
+			else:
+				entry['author'] = u'unknown author'
+			if(entry['title']):
+				entry['title'] = entry['title'][0]
+			else:
+				entry['title'] =  u'unknown title'
+			return templates.entry % entry
+		
 		self.response_headers.append(('Content-Type', 'text/html; charset=utf-8'))
 		keywords = self.query_string.get('keywords', [''])[0].decode('utf-8')
 		page = int(self.query_string.get('page', ['0'])[0])
@@ -68,7 +80,7 @@ class Application(object):
 				pagerefs += templates.pageref % pageref_params
 			else:
 				pagerefs += templates.page % pageref_params
-		result = map(lambda entry: templates.entry % entry, result)
+		result = map(processEntry, result)
 		result = '\n'.join(result)
 		result_table = templates.result % {'keywords': cgi.escape(keywords), 'rows': result, 'ndocs': ndocs, 'pagerefs': pagerefs}
 		response_body = templates.html % (self.app_url, result_table)
@@ -81,6 +93,17 @@ class Application(object):
 			proxy = self.__get_proxy()
 			info = proxy.detailed_info(docid)
 			info['app_url'] = self.app_url
+			if(info['author']):
+				info['author'] = u', '.join(info['author'])
+			else:
+				info['author'] = u'unknown author'
+			if(info['title']):
+				info['short_title'] = info['title'][0]
+				info['title'] = u'<br />'.join(info['title'])
+			else:
+				info['title'] =  u'unknown title'
+				info['short_title'] = info['title']
+			info['description'] = u'<br />'.join(info['description'])
 			if info['cover']:
 				info['image'] = templates.image % info
 			else:

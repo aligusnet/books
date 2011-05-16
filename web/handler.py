@@ -120,7 +120,7 @@ class Application(object):
 	def __image_content_type(self, name):
 		ext = name.lower().split('.')[-1]
 		return ContentType.extensions.get(ext, 'image')
-			
+
 	def image(self):
 		if len(self.path_parts) > 1:
 			docid = int(self.path_parts[1])
@@ -128,8 +128,7 @@ class Application(object):
 			cover = proxy.get_cover(docid)
 			self.response_body = cover[1].data
 			self.response_headers.append(('Content-Type', self.__image_content_type(cover[0])))
-			self.response_headers.append(('Content-Disposition', 'Inline; filename=%s' % cover[0].encode('utf-8')))
-			self.response_headers.append(('Title', cover[0].encode('utf-8')))
+			self.response_headers.append(('Content-Disposition', 'Inline; filename="%s"' % cover[0].encode('utf-8')))
 		else:
 			self.response_headers.append(('Content-Type', 'image'))
 			
@@ -144,7 +143,7 @@ class Application(object):
 				name = str(uuid.uui4())+'.epub'
 			self.response_body = data
 			self.response_headers.append(('Content-Type', ContentType.extensions['epub']))
-			self.response_headers.append(('Content-Disposition', 'Attachment; filename=%s' % name))
+			self.response_headers.append(('Content-Disposition', 'Attachment; filename="%s"' % name))
 
 	def move_to_index(self):
 		self.status = '301 Moved Permanently'
